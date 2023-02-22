@@ -60,18 +60,25 @@ namespace Microsoft.OpenApi.Readers
             switch (inputVersion)
             {
                 case string version when version.is2_0():
+                    this.Diagnostic.SpecificationVersion = OpenApiSpecVersion.OpenApi2_0;
                     VersionService = new OpenApiV2VersionService(Diagnostic);
                     doc = VersionService.LoadDocument(RootNode);
-                    this.Diagnostic.SpecificationVersion = OpenApiSpecVersion.OpenApi2_0;
                     ValidateRequiredFields(doc, version);
                     break;
 
-                case string version when version.is3_0() || version.is3_1():
+                case string version when version.is3_0():
+                    this.Diagnostic.SpecificationVersion = OpenApiSpecVersion.OpenApi3_0;
                     VersionService = new OpenApiV3VersionService(Diagnostic);
                     doc = VersionService.LoadDocument(RootNode);
-                    this.Diagnostic.SpecificationVersion = OpenApiSpecVersion.OpenApi3_0;
                     ValidateRequiredFields(doc, version);
                     break;
+                case string version when version.is3_1():
+                    this.Diagnostic.SpecificationVersion = OpenApiSpecVersion.OpenApi3_1;
+                    VersionService = new OpenApiV3VersionService(Diagnostic);
+                    doc = VersionService.LoadDocument(RootNode);
+                    ValidateRequiredFields(doc, version);
+                    break;
+
 
                 default:
                     throw new OpenApiUnsupportedSpecVersionException(inputVersion);
@@ -100,6 +107,10 @@ namespace Microsoft.OpenApi.Readers
                     break;
 
                 case OpenApiSpecVersion.OpenApi3_0:
+                    this.VersionService = new OpenApiV3VersionService(Diagnostic);
+                    element = this.VersionService.LoadElement<T>(node);
+                    break;
+                case OpenApiSpecVersion.OpenApi3_1:
                     this.VersionService = new OpenApiV3VersionService(Diagnostic);
                     element = this.VersionService.LoadElement<T>(node);
                     break;

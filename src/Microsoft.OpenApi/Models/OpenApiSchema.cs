@@ -21,9 +21,14 @@ namespace Microsoft.OpenApi.Models
 
         /// <summary>
         /// Follow JSON Schema definition: https://tools.ietf.org/html/draft-fge-json-schema-validation-00
-        /// Value MUST be a string. Multiple types via an array are not supported.
         /// </summary>
         public string Type { get; set; }
+
+        /// <summary>
+        /// Follow JSON Schema definition: https://tools.ietf.org/html/draft-fge-json-schema-validation-00
+        /// Multiple types via an array are not supported.
+        /// </summary>
+        public ISet<string> TypeArray { get; set; }  = new HashSet<string>();
 
         /// <summary>
         /// Follow JSON Schema definition: https://tools.ietf.org/html/draft-fge-json-schema-validation-00
@@ -254,6 +259,7 @@ namespace Microsoft.OpenApi.Models
         {
             Title = schema?.Title ?? Title;
             Type = schema?.Type ?? Type;
+            TypeArray = schema?.TypeArray != null ? new HashSet<string>(schema.TypeArray) : null;
             Format = schema?.Format ?? Format;
             Description = schema?.Description ?? Description;
             Maximum = schema?.Maximum ?? Maximum;
@@ -395,6 +401,9 @@ namespace Microsoft.OpenApi.Models
 
             // type
             writer.WriteProperty(OpenApiConstants.Type, Type);
+
+            // type array
+            writer.WriteOptionalCollection(OpenApiConstants.Type, TypeArray, (w, s) => w.WriteValue(s));
 
             // allOf
             writer.WriteOptionalCollection(OpenApiConstants.AllOf, AllOf, (w, s) => s.SerializeAsV3(w));
@@ -572,7 +581,7 @@ namespace Microsoft.OpenApi.Models
                     AnyOf?.FirstOrDefault(static x => !string.IsNullOrEmpty(x.Format))?.Format ??
                     OneOf?.FirstOrDefault(static x => !string.IsNullOrEmpty(x.Format))?.Format;
             }
-            
+
             writer.WriteProperty(OpenApiConstants.Format, Format);
 
             // items

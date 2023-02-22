@@ -15,7 +15,12 @@ namespace Microsoft.OpenApi
 
         /// <summary>
         /// Represents all patches of OpenAPI V3.0 spec (e.g. 3.0.0, 3.0.1)
-        /// </summary> 
-        OpenApi3_0
+        /// </summary>
+        OpenApi3_0,
+
+        /// <summary>
+        /// Represents all patches of OpenAPI V3.1 spec (e.g. 3.1.0, 3.1.1)
+        /// </summary>
+        OpenApi3_1
     }
 }
