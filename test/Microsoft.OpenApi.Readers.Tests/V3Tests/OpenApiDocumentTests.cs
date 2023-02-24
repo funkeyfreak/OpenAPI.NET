@@ -1559,7 +1559,7 @@ paths: {}",
             };
 
             // Assert
-            diagnostic.Should().BeEquivalentTo(new OpenApiDiagnostic() { SpecificationVersion = OpenApiSpecVersion.OpenApi3_0 });
+            diagnostic.Should().BeEquivalentTo(new OpenApiDiagnostic() { SpecificationVersion = OpenApiSpecVersion.OpenApi3_1 });
             actual.Should().BeEquivalentTo(expected);
         }
 
@@ -1775,8 +1775,7 @@ paths: {}",
 
             // Assert
             actual.Should().BeEquivalentTo(expected);
-            context.Should().BeEquivalentTo(
-    new OpenApiDiagnostic() { SpecificationVersion = OpenApiSpecVersion.OpenApi3_0 });
+            context.Should().BeEquivalentTo(new OpenApiDiagnostic() { SpecificationVersion = OpenApiSpecVersion.OpenApi3_1 });
 
         }
 

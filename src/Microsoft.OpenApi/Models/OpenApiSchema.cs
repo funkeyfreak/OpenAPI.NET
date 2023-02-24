@@ -298,16 +298,6 @@ namespace Microsoft.OpenApi.Models
             Reference = schema?.Reference != null ? new(schema?.Reference) : null;
         }
 
-        public void SerializeAsV31(IOpenApiWriter writer) {
-            if (writer == null)
-            {
-                throw Error.ArgumentNull(nameof(writer));
-            }
-
-            var settings = writer.GetSettings();
-            var target = this;
-        }
-
         /// <summary>
         /// Serialize <see cref="OpenApiSchema"/> to Open Api v3.0
         /// </summary>

@@ -239,6 +239,9 @@
       <EmbeddedResource Include="V3Tests\Samples\OpenApiSchema\simpleSchema.yaml">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
+      <EmbeddedResource Include="V3Tests\Samples\OpenApiSchema\documentWithTypeArray.yaml">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </EmbeddedResource>
       <EmbeddedResource Include="V3Tests\Samples\OpenApiSecurityScheme\apiKeySecurityScheme.yaml">
         <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
