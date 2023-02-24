@@ -162,6 +162,7 @@ namespace Microsoft.OpenApi.Workbench
                 _version = value;
                 OnPropertyChanged(nameof(IsV2_0));
                 OnPropertyChanged(nameof(IsV3_0));
+                OnPropertyChanged(nameof(IsV3_1));
             }
         }
 
@@ -187,6 +188,12 @@ namespace Microsoft.OpenApi.Workbench
         {
             get => Version == OpenApiSpecVersion.OpenApi3_0;
             set => Version = OpenApiSpecVersion.OpenApi3_0;
+        }
+
+        public bool IsV3_1
+        {
+            get => Version == OpenApiSpecVersion.OpenApi3_1;
+            set => Version = OpenApiSpecVersion.OpenApi3_1;
         }
 
         /// <summary>

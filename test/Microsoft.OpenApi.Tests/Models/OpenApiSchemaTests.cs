@@ -463,5 +463,133 @@ namespace Microsoft.OpenApi.Tests.Models
             // Assert
             Assert.Equal(expectedV2Schema, v2Schema);
         }
+
+        [Fact]
+        public void SerializeAsV3ShouldHandleTypeArraysSchema()
+        {
+            // Arrange
+            var schema = new OpenApiSchema()
+            {
+                OneOf = new List<OpenApiSchema>
+                {
+                    new OpenApiSchema
+                    {
+                        TypeArray = new HashSet<string> { "number", "null" },
+                        Format = "decimal"
+                    },
+                }
+            };
+
+            var outputStringWriter = new StringWriter(CultureInfo.InvariantCulture);
+            var openApiJsonWriter = new OpenApiJsonWriter(outputStringWriter, new OpenApiJsonWriterSettings { Terse = false });
+
+            // Act
+            // Serialize as V3
+            schema.SerializeAsV3(openApiJsonWriter);
+            openApiJsonWriter.Flush();
+
+            var v3Schema = outputStringWriter.GetStringBuilder().ToString().MakeLineBreaksEnvironmentNeutral();
+
+            var expectedV3Schema = @"{
+  ""oneOf"": [
+    {
+      ""type"": [
+        ""number"",
+        ""null""
+      ],
+      ""format"": ""decimal""
+    }
+  ]
+}".MakeLineBreaksEnvironmentNeutral();
+
+                // Assert
+                Assert.Equal(expectedV3Schema, v3Schema);
+        }
+
+        [Fact]
+        public void SerializeAsV3TypeArraysShouldOverrideTypeSchema()
+        {
+            // Arrange
+            var schema = new OpenApiSchema()
+            {
+                OneOf = new List<OpenApiSchema>
+                {
+                    new OpenApiSchema
+                    {
+                        TypeArray = new HashSet<string> { "number", "null" },
+                        Type = "number",
+                        Format = "decimal"
+                    },
+                }
+            };
+
+            var outputStringWriter = new StringWriter(CultureInfo.InvariantCulture);
+            var openApiJsonWriter = new OpenApiJsonWriter(outputStringWriter, new OpenApiJsonWriterSettings { Terse = false });
+
+            // Act
+            // Serialize as V3
+            schema.SerializeAsV3(openApiJsonWriter);
+            openApiJsonWriter.Flush();
+
+            var v3Schema = outputStringWriter.GetStringBuilder().ToString().MakeLineBreaksEnvironmentNeutral();
+
+            var expectedV3Schema = @"{
+  ""oneOf"": [
+    {
+      ""type"": [
+        ""number"",
+        ""null""
+      ],
+      ""format"": ""decimal""
+    }
+  ]
+}".MakeLineBreaksEnvironmentNeutral();
+
+                // Assert
+                Assert.Equal(expectedV3Schema, v3Schema);
+        }
+
+        [Fact]
+        public void SerializeAsV3TypeArraysShouldOverrideNullableSchema()
+        {
+            // Arrange
+            var schema = new OpenApiSchema()
+            {
+                OneOf = new List<OpenApiSchema>
+                {
+                    new OpenApiSchema
+                    {
+                        TypeArray = new HashSet<string> { "number", "null" },
+                        Nullable = true,
+                        Format = "decimal"
+                    },
+                }
+            };
+
+            var outputStringWriter = new StringWriter(CultureInfo.InvariantCulture);
+            var openApiJsonWriter = new OpenApiJsonWriter(outputStringWriter, new OpenApiJsonWriterSettings { Terse = false });
+
+            // Act
+            // Serialize as V3
+            schema.SerializeAsV3(openApiJsonWriter);
+            openApiJsonWriter.Flush();
+
+            var v3Schema = outputStringWriter.GetStringBuilder().ToString().MakeLineBreaksEnvironmentNeutral();
+
+            var expectedV3Schema = @"{
+  ""oneOf"": [
+    {
+      ""type"": [
+        ""number"",
+        ""null""
+      ],
+      ""format"": ""decimal""
+    }
+  ]
+}".MakeLineBreaksEnvironmentNeutral();
+
+                // Assert
+                Assert.Equal(expectedV3Schema, v3Schema);
+        }
     }
 }

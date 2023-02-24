@@ -50,9 +50,24 @@ namespace Microsoft.OpenApi.Validations.Rules
                 return;
             }
 
-            var type = schema.Type;
+            var typeArray = schema.TypeArray;
             var format = schema.Format;
-            var nullable = schema.Nullable;
+            bool nullable;
+            string type = null;
+
+            // if nullable is available via typeArray, use it to determine if the property is nullable.
+            // Otherwise, use schema.Nullable.
+            if (typeArray != null && typeArray.Count > 1) {
+                nullable = typeArray.Contains("null");
+                typeArray.Remove("null");
+                foreach(var t in typeArray) {
+                    type = t;
+                }
+            }
+            else {
+                nullable = schema.Nullable;
+                type = schema.Type;
+            }
 
             // Before checking the type, check first if the schema allows null.
             // If so and the data given is also null, this is allowed for any type.

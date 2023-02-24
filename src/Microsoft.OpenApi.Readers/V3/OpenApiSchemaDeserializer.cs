@@ -118,7 +118,13 @@ namespace Microsoft.OpenApi.Readers.V3
             {
                 "type", (o, n) =>
                 {
-                    o.Type = n.GetScalarValue();
+                    if (n is ValueNode) {
+                        o.Type = n.GetScalarValue();
+                    }
+                    else
+                    {
+                        o.TypeArray = new HashSet<string>(n.CreateSimpleList(n2 => n2.GetScalarValue()));
+                    }
                 }
             },
             {
@@ -188,7 +194,6 @@ namespace Microsoft.OpenApi.Readers.V3
                     o.Default = n.CreateAny();
                 }
             },
-
             {
                 "nullable", (o, n) =>
                 {
@@ -279,7 +284,7 @@ namespace Microsoft.OpenApi.Readers.V3
 
             var pointer = mapNode.GetReferencePointer();
             if (pointer != null)
-            {                   
+            {
                 var description = node.Context.VersionService.GetReferenceScalarValues(mapNode, OpenApiConstants.Description);
                 var summary = node.Context.VersionService.GetReferenceScalarValues(mapNode, OpenApiConstants.Summary);
 
@@ -289,7 +294,7 @@ namespace Microsoft.OpenApi.Readers.V3
                     Reference = node.Context.VersionService.ConvertToOpenApiReference(pointer, ReferenceType.Schema, summary, description)
                 };
             }
-            
+
             var schema = new OpenApiSchema();
 
             foreach (var propertyNode in mapNode)
@@ -299,6 +304,30 @@ namespace Microsoft.OpenApi.Readers.V3
 
             ProcessAnyFields(mapNode, schema, _schemaAnyFields);
             ProcessAnyListFields(mapNode, schema, _schemaAnyListFields);
+
+            var type = schema.Type;
+            var typeArray = schema.TypeArray;
+            var nullable = schema.Nullable;
+
+            var version = node.Context.Diagnostic.SpecificationVersion;
+
+            if(version == OpenApiSpecVersion.OpenApi3_1) {
+                if (nullable == true) {
+                    mapNode.Context.Diagnostic.Errors.Add(new OpenApiError(node.Context.GetLocation(), "Nullable field is not supported"));
+                }
+                if (type != null && typeArray != null && typeArray.Count() > 0) {
+                    mapNode.Context.Diagnostic.Errors.Add(new OpenApiError(node.Context.GetLocation(), "Schema cannot have both type and type array fields."));
+                }
+                if (typeArray != null && (typeArray.Count > 3 || (typeArray.Contains("null") && typeArray.Count > 2))) {
+                    // TODO: this must be supported in order to implement 3.1 specification
+                    mapNode.Context.Diagnostic.Errors.Add(new OpenApiError(node.Context.GetLocation(), "Schema cannot have more than one type in type array"));
+                }
+            }
+            else {
+                if (typeArray != null && typeArray.Count() > 0) {
+                    mapNode.Context.Diagnostic.Errors.Add(new OpenApiError(node.Context.GetLocation(), $"{version} does not support arrayed type definitions"));
+                }
+            }
 
             return schema;
         }
