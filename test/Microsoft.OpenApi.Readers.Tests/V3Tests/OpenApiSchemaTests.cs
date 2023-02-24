@@ -993,19 +993,5 @@ get:
             diagnostic.Should().BeEquivalentTo(
                 new OpenApiDiagnostic() { SpecificationVersion = OpenApiSpecVersion.OpenApi3_1 });
         }
-
-        [Fact]
-        public void ParseTypeSchemaShouldSucceed() {
-            // Arrange
-            // Act
-            // Assert
-        }
-
-        [Fact]
-        public void ParseTypeArrayAndTypeShouldNotSucceed() {
-            // Arrange
-            // Act
-            // Assert
-        }
     }
 }
