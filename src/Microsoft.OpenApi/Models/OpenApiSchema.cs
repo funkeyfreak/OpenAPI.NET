@@ -298,6 +298,16 @@ namespace Microsoft.OpenApi.Models
             Reference = schema?.Reference != null ? new(schema?.Reference) : null;
         }
 
+        public void SerializeAsV31(IOpenApiWriter writer) {
+            if (writer == null)
+            {
+                throw Error.ArgumentNull(nameof(writer));
+            }
+
+            var settings = writer.GetSettings();
+            var target = this;
+        }
+
         /// <summary>
         /// Serialize <see cref="OpenApiSchema"/> to Open Api v3.0
         /// </summary>
@@ -400,10 +410,11 @@ namespace Microsoft.OpenApi.Models
             writer.WriteOptionalCollection(OpenApiConstants.Enum, Enum, (nodeWriter, s) => nodeWriter.WriteAny(s));
 
             // type
-            writer.WriteProperty(OpenApiConstants.Type, Type);
-
-            // type array
-            writer.WriteOptionalCollection(OpenApiConstants.Type, TypeArray, (w, s) => w.WriteValue(s));
+            if (TypeArray?.Count() == 0) {
+                writer.WriteProperty(OpenApiConstants.Type, Type);
+            } else {
+                writer.WriteOptionalCollection(OpenApiConstants.Type, TypeArray, (w, s) => w.WriteValue(s));
+            }
 
             // allOf
             writer.WriteOptionalCollection(OpenApiConstants.AllOf, AllOf, (w, s) => s.SerializeAsV3(w));
@@ -446,7 +457,9 @@ namespace Microsoft.OpenApi.Models
             writer.WriteOptionalObject(OpenApiConstants.Default, Default, (w, d) => w.WriteAny(d));
 
             // nullable
-            writer.WriteProperty(OpenApiConstants.Nullable, Nullable, false);
+            if (TypeArray?.Count() == 0) {
+                writer.WriteProperty(OpenApiConstants.Nullable, Nullable, false);
+            }
 
             // discriminator
             writer.WriteOptionalObject(OpenApiConstants.Discriminator, Discriminator, (w, s) => s.SerializeAsV3(w));
